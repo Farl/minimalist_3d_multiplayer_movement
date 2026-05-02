@@ -1,0 +1,36 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Minimalist 3D Multiplayer Movement</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+        "cannon-es": "https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js",
+        "websim-socket": "https://esm.sh/websim-socket"
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.10.1/dist/nipplejs.min.js"></script>
+</head>
+<body>
+  <div id="game-container">
+    <div class="crosshair"></div>
+  </div>
+  <div id="mobile-controls">
+    <div id="joystick-container"></div>
+    <div id="vehicle-controls">
+      <div id="brake-button" class="vehicle-control-button">BRAKE</div>
+      <div id="acc-button" class="vehicle-control-button">ACC</div>
+    </div>
+    <div id="action-buttons">
+      <div id="jump-button">FLIP</div>
+      <div id="chat-button">CHAT</div>
+    </div>
+  </div>
+  <script src="app.js" type="module"></script>
+</body>
+</html>
