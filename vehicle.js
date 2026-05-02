@@ -2,9 +2,10 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 
 export class Vehicle {
-  constructor(scene, physicsWorld) {
+  constructor(scene, physicsWorld, options = {}) {
     this.scene = scene;
     this.physicsWorld = physicsWorld;
+    this.isRemote = options.isRemote || false;
     this.vehicle = null;
     this.carBody = null;
     this.wheelBodies = [];
@@ -20,6 +21,11 @@ export class Vehicle {
   }
   
   init() {
+    if (this.isRemote) {
+      this.createCarMesh();
+      return;
+    }
+
     // Create physics world if not provided
     if (!this.physicsWorld) {
       this.physicsWorld = new CANNON.World({
@@ -120,7 +126,8 @@ export class Vehicle {
   }
 
   update() {
-    if (!this.carMesh || !this.vehicle) return;
+    if (!this.carMesh) return;
+    if (this.isRemote || !this.vehicle) return;
     
     const euler = new CANNON.Vec3();
     this.carBody.quaternion.toEuler(euler);
@@ -217,6 +224,14 @@ export class Vehicle {
   }
   
   getPosition() {
+    if (this.isRemote && this.carMesh) {
+      return {
+        x: this.carMesh.position.x,
+        y: this.carMesh.position.y,
+        z: this.carMesh.position.z
+      };
+    }
+
     if (!this.carBody) return { x: 0, y: 0, z: 0 };
     return {
       x: this.carBody.position.x,
@@ -226,13 +241,35 @@ export class Vehicle {
   }
   
   getRotation() {
+    if (this.isRemote && this.carMesh) {
+      return this.carMesh.rotation.y;
+    }
+
     if (!this.carBody) return 0;
     const euler = new CANNON.Vec3();
     this.carBody.quaternion.toEuler(euler);
     return euler.y;
   }
+
+  setTransform(x, y, z, rotation = 0) {
+    if (this.isRemote && this.carMesh) {
+      this.carMesh.position.set(x, y, z);
+      this.carMesh.rotation.set(0, rotation, 0);
+      return;
+    }
+
+    this.setPosition(x, y, z);
+    if (this.carBody) {
+      this.carBody.quaternion.setFromEuler(0, rotation, 0);
+    }
+  }
   
   setPosition(x, y, z) {
+    if (this.isRemote && this.carMesh) {
+      this.carMesh.position.set(x, y, z);
+      return;
+    }
+
     if (!this.carBody) return;
     this.carBody.position.set(x, y, z);
     
@@ -323,7 +360,13 @@ export class Vehicle {
       const wheelMesh = new THREE.Mesh(wheelGeometry, wheelMaterial);
       wheelMesh.position.copy(wheelPositions[i]);
       wheelMesh.castShadow = true;
-      this.scene.add(wheelMesh);
+
+      if (this.isRemote) {
+        this.carMesh.add(wheelMesh);
+      } else {
+        this.scene.add(wheelMesh);
+      }
+
       this.wheelMeshes.push(wheelMesh);
     }
     

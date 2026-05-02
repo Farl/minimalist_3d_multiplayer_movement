@@ -255,15 +255,14 @@ async function main() {
         const peerInfo = room.peers[clientId] || {};
         const peerName = peerInfo.username || `Player${clientId.substring(0, 4)}`;
         
-        // Simplified vehicle creation - just a static mesh
-        const vehicle = new Vehicle(scene, physicsWorld);
-        vehicle.setPosition(playerData.x, playerData.y || 1, playerData.z);
-        
-        // Disable physics dynamics for remote players
-        vehicle.carBody.type = CANNON.Body.STATIC;
-        vehicle.wheelBodies.forEach(wheelBody => {
-          wheelBody.type = CANNON.Body.STATIC;
-        });
+        // Remote players are visual-only to avoid physics collisions/instability.
+        const vehicle = new Vehicle(scene, null, { isRemote: true });
+        vehicle.setTransform(
+          playerData.x,
+          playerData.y || 1,
+          playerData.z,
+          playerData.rotation || 0
+        );
         
         otherPlayers[clientId] = vehicle;
         
@@ -276,8 +275,13 @@ async function main() {
       
       // Update existing player
       else if (otherPlayers[clientId] && playerData.x !== undefined && playerData.z !== undefined) {
-        // Simply set position without complex dynamics
-        otherPlayers[clientId].setPosition(playerData.x, playerData.y || 1, playerData.z);
+        // Sync remote transform directly from network state.
+        otherPlayers[clientId].setTransform(
+          playerData.x,
+          playerData.y || 1,
+          playerData.z,
+          playerData.rotation || 0
+        );
         
         // Update chat message if present
         if (playerData.chat && playerData.chat.message) {
