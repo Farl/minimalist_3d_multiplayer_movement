@@ -501,8 +501,8 @@ export class PlayerControls {
       const accButton = document.getElementById('acc-button');
       const brakeButton = document.getElementById('brake-button');
       
-      forward = brakeButton && brakeButton.pressed;
-      backward = accButton && accButton.pressed;
+      forward = accButton && accButton.pressed;
+      backward = brakeButton && brakeButton.pressed;
       
       steering = -this.moveRight / SPEED;  
       steering = Math.max(-1, Math.min(1, steering));

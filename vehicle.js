@@ -199,15 +199,12 @@ export class Vehicle {
       }
     }
 
-    // Apply force based on vehicle orientation
-    const forceMultiplier = velocity > 0 ? 1 : -1;
-    
     if (forward) {
-      this.vehicle.setWheelForce(this.maxForce * forceMultiplier, 0);
-      this.vehicle.setWheelForce(this.maxForce * forceMultiplier, 1);
+      this.vehicle.setWheelForce(-this.maxForce, 0);
+      this.vehicle.setWheelForce(-this.maxForce, 1);
     } else if (backward) {
-      this.vehicle.setWheelForce(-this.maxForce * forceMultiplier * 0.6, 0);
-      this.vehicle.setWheelForce(-this.maxForce * forceMultiplier * 0.6, 1);
+      this.vehicle.setWheelForce(this.maxForce * 0.6, 0);
+      this.vehicle.setWheelForce(this.maxForce * 0.6, 1);
     } else {
       this.vehicle.setWheelForce(0, 0);
       this.vehicle.setWheelForce(0, 1);
