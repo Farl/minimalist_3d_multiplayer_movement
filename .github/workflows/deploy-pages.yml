@@ -21,8 +21,14 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate multiplayer configuration
+        env:
+          PARTYSERVER_HOST: ${{ vars.PARTYSERVER_HOST }}
+        run: node scripts/prepare-env.mjs
 
       - name: Inject PartyKit host into env.js
         run: |
